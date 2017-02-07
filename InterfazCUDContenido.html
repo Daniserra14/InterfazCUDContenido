@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CUD Contenido</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <form action="#" name="creador">
+        <label for="tipoElemento">Tipo de elemento: </label>
+        <select class="form-control" id="tipoElemento">
+            <option value="cabecera">Cabecera de nivel (h1)</option>
+            <option value="parrafo">Párrafo</option>
+            <option value="texto">Campo de texto</option>
+            <option value="boton">Botón</option>
+            <option value="lista">Lista</option>
+            <option value="checkbox">Checkbox</option>
+            <option value="radio">Radio</option>
+        </select><br>
+        <label for="textoDentro">Texto del control: </label>
+        <input class="form-control" type="text" id="textoDentro"><br>
+        <button class="btn btn-success form-control">Crear Elemento</button>
+    </form>
+    <hr>
+    <div id="visor"></div>   
+    
+<script>
+    window.onload=function(){
+        
+        creador.onsubmit = function(){
+            
+            var textNode = document.createTextNode(creador.textoDentro.value);
+            var elemento = document.createElement("div");
+            
+            switch(tipoElemento.value){
+                case "cabecera":
+                    var h1 = document.createElement("h1");
+                    h1.appendChild(textNode);
+                    
+                    elemento.appendChild(h1);
+                    break;
+                case "parrafo":
+                    var p = document.createElement("p");
+                    p.appendChild(textNode);
+                    
+                    elemento.appendChild(p);
+                    break;
+                case "texto":
+                    var txt = document.createElement("input")
+                    txt.setAttribute("type","text");
+                    txt.setAttribute("placeholder",textNode.nodeValue);
+                    txt.setAttribute("class","form-control");
+                    
+                    elemento.appendChild(txt);
+                    
+                    break;
+                case "boton":
+                    var btn = document.createElement("button")
+                    btn.appendChild(textNode);
+                    btn.setAttribute("class","btn btn-default");
+                    
+                    elemento.appendChild(btn);
+                    
+                    break;
+                case "lista":
+                    
+                    break;
+                case "checkbox":
+                    var cb = document.createElement("input");
+                    cb.setAttribute("type","checkbox");
+                    cb.setAttribute("id","cb"+document.getElementById("visor").childElementCount);
+                    
+                    elemento.appendChild(cb);
+                    
+                    var lbl = document.createElement("label");
+                    lbl.setAttribute("for","cb"+document.getElementById("visor").childElementCount);
+                    
+                    lbl.appendChild(textNode);
+                    
+                    elemento.appendChild(lbl);
+                    
+                    break;
+                case "radio":
+                    var rb = document.createElement("input")
+                    rb.setAttribute("type","radio");
+                    rb.setAttribute("id","rb"+document.getElementById("visor").childElementCount);
+                    
+                    elemento.appendChild(rb);
+                    
+                    var lbl = document.createElement("label");
+                    lbl.setAttribute("for","rb"+document.getElementById("visor").childElementCount);
+                    
+                    lbl.appendChild(textNode);
+                    
+                    elemento.appendChild(lbl);
+                    
+                    break;
+            }
+            elemento.setAttribute("id","elem"+document.getElementById("visor").childElementCount);
+            document.getElementById("visor").appendChild(elemento);
+            
+            creador.textoDentro.value = "";
+        }
+        
+    }
+</script>
+</div>
+</body>
+</html>
