@@ -4,13 +4,30 @@
     <meta charset="UTF-8">
     <title>CUD Contenido</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+		
+		.btn-interfaz{
+			float: right;
+		}
+		
+		.list-group-item{
+			padding-bottom: 20px;
+			margin-bottom: 5px;
+		}
+		label{
+			margin-left: 5px;
+		}
+		#nivelCabecera div{
+			display: inline;
+		}
+	</style>
 </head>
 <body>
 <div class="container">
-    <form action="" name="creador">
+    <form action="#" name="creador">
         <label for="tipoElemento">Tipo de elemento: </label>
         <select class="form-control" id="tipoElemento">
-            <option value="cabecera">Cabecera de nivel (h1)</option>
+            <option value="cabecera">Cabecera de nivel</option>
             <option value="parrafo">Párrafo</option>
             <option value="texto">Campo de texto</option>
             <option value="boton">Botón</option>
@@ -18,7 +35,33 @@
             <option value="checkbox">Checkbox</option>
             <option value="radio">Radio</option>
         </select><br>
-        <label for="textoDentro">Texto del control: </label>
+        
+        <!-- Solo se muestra en Cabecera de nivel -->
+        <div id="nivelCabecera">
+        <label>Nivel de la cabecera: </label>
+			<div class="radio">
+				<label><input value="h1" type="radio" name="nivelCabecera" checked>H1</label>
+			</div>
+		   <div class="radio">
+				<label><input value="h2" type="radio" name="nivelCabecera">H2</label>
+			</div>
+		   <div class="radio">
+				<label><input value="h3" type="radio" name="nivelCabecera">H3</label>
+			</div>
+		   <div class="radio">
+				<label><input value="h4" type="radio" name="nivelCabecera">H4</label>
+			</div>
+		   <div class="radio">
+				<label><input value="h5" type="radio" name="nivelCabecera">H5</label>
+			</div><br><br>
+      	</div>
+      	
+      	<!-- Solo se muestra en Lista -->
+      	<div id="elemLista">
+			<label>Número de elementos: </label>
+     		<input type="number" min="1" max="10" id="numElemLista" value="1"><br><br>
+      	</div>
+        <label for="textoDentro">Texto del elemento: </label>
         <input class="form-control" type="text" id="textoDentro"><br>
         <button class="btn btn-success form-control">Crear Elemento</button>
     </form>
@@ -26,28 +69,54 @@
     <div id="visor"></div>   
     
 <script>
+	var contadorElementos = 0;
     window.onload=function(){
         
+		//Elementos ocultos
+		document.getElementById("elemLista").style.display="none";
+		
         creador.onsubmit = function(){
             
             var textNode = document.createTextNode(creador.textoDentro.value);
             var elemento = document.createElement("div");
-            
+			
+			elemento.setAttribute("class","list-group-item");
+			
+			var btnBorrar = document.createElement("button");
+			btnBorrar.setAttribute("class","btn btn-default btn-interfaz");
+			
+			var giconRemove = document.createElement("span")
+			giconRemove.setAttribute("class","glyphicon glyphicon-remove");
+			btnBorrar.appendChild(giconRemove);
+			btnBorrar.setAttribute("style","float: right");
+			
+			var btnEditar = document.createElement("button");
+			btnEditar.setAttribute("class","btn btn-default btn-interfaz");
+			btnEditar.setAttribute("style","float: right");
+			
+			var giconPencil = document.createElement("span");
+			giconPencil.setAttribute("class","glyphicon glyphicon-pencil");
+			btnEditar.appendChild(giconPencil);
+			
+			
             switch(tipoElemento.value){
                 case "cabecera":
-                    var h1 = document.createElement("h1");
-                    h1.appendChild(textNode);
+                    var h = document.createElement(creador.nivelCabecera.value);
+                    h.appendChild(textNode);
+					h.setAttribute("style","display:inline");
                     
-                    elemento.appendChild(h1);
+                    elemento.appendChild(h);
                     break;
                 case "parrafo":
                     var p = document.createElement("p");
                     p.appendChild(textNode);
+					p.setAttribute("style","display:inline");
                     
                     elemento.appendChild(p);
                     break;
                 case "texto":
-                    var txt = document.createElement("input")
+                    var txt = document.createElement("input");
+					txt.setAttribute("style","width: 80%; display:inline");
                     txt.setAttribute("type","text");
                     txt.setAttribute("placeholder",textNode.nodeValue);
                     txt.setAttribute("class","form-control");
@@ -56,25 +125,39 @@
                     
                     break;
                 case "boton":
-                    var btn = document.createElement("button")
+                    var btn = document.createElement("button");
+					btn.setAttribute("style","display:inline");
                     btn.appendChild(textNode);
-                    btn.setAttribute("class","btn btn-default");
+                    btn.setAttribute("class","btn btn-primary");
                     
                     elemento.appendChild(btn);
                     
                     break;
                 case "lista":
+					
+					var sel = document.createElement("select");
+					sel.setAttribute("class","form-control");
+					sel.setAttribute("style","width: 70%; display:inline");
+					for(i=1;i<=parseInt(document.getElementById("numElemLista").value);i++){
+						var opcion = document.createElement("option");
+						var textOption = document.createTextNode(i+".- "+textNode.nodeValue);
+						
+						opcion.appendChild(textOption);
+						sel.appendChild(opcion);
+					}
                     
+					elemento.appendChild(sel);
                     break;
                 case "checkbox":
                     var cb = document.createElement("input");
+					cb.setAttribute("style","display:inline");
                     cb.setAttribute("type","checkbox");
-                    cb.setAttribute("id","cb"+document.getElementById("visor").childElementCount);
+                    cb.setAttribute("id","cb"+contadorElementos);
                     
                     elemento.appendChild(cb);
                     
                     var lbl = document.createElement("label");
-                    lbl.setAttribute("for","cb"+document.getElementById("visor").childElementCount);
+                    lbl.setAttribute("for","cb"+contadorElementos);
                     
                     lbl.appendChild(textNode);
                     
@@ -82,28 +165,73 @@
                     
                     break;
                 case "radio":
-                    var rb = document.createElement("input")
+                    var rb = document.createElement("input");
+					rb.setAttribute("style","display:inline");
                     rb.setAttribute("type","radio");
-                    rb.setAttribute("id","rb"+document.getElementById("visor").childElementCount);
+                    rb.setAttribute("id","rb"+contadorElementos);
                     
                     elemento.appendChild(rb);
                     
                     var lbl = document.createElement("label");
-                    lbl.setAttribute("for","rb"+document.getElementById("visor").childElementCount);
+                    lbl.setAttribute("for","rb"+contadorElementos);
                     
                     lbl.appendChild(textNode);
-                    
+					
                     elemento.appendChild(lbl);
                     
                     break;
             }
-            elemento.setAttribute("id","elem"+document.getElementById("visor").childElementCount);
-            document.getElementById("visor").appendChild(elemento);
-            
-            creador.textoDentro.value = "";
+			btnBorrar.setAttribute("data-number",contadorElementos);
+			btnEditar.setAttribute("data-number",contadorElementos);
+			btnBorrar.onclick = function(){
+				borrarElemento(btnBorrar.getAttribute("data-number"));
+			};
+			btnEditar.onclick = function(){
+				editarElemento(btnEditar.getAttribute("data-number"));
+			};;
+			
+			elemento.appendChild(btnBorrar);
+			elemento.appendChild(btnEditar);
+			elemento.appendChild(document.createElement("br"));
+			elemento.setAttribute("id","elem"+contadorElementos);
+			document.getElementById("visor").appendChild(elemento);
+			contadorElementos++;
+
+			creador.textoDentro.value = "";
+
+			return false;
         }
+		
+		creador.tipoElemento.onchange=function(){
+			document.getElementById("nivelCabecera").style.display="none";
+			document.getElementById("elemLista").style.display="none";
+			
+			switch(creador.tipoElemento.value){
+				case "cabecera":
+					document.getElementById("nivelCabecera").style.display="block";
+					break;
+				case "lista":
+					document.getElementById("elemLista").style.display="block";
+					break;
+				case "radio":
+					document.getElementById("elemLista").style.display="block";
+					break;
+				case "checkbox":
+					document.getElementById("elemLista").style.display="block";
+					break;
+			}
+		}
         
-    }
+    }//fin de window.onload
+	
+	function borrarElemento(num){	
+		var elem = document.getElementById("elem"+num);
+		document.getElementById("visor").removeChild(elem);
+	}
+	function editarElemento(num){
+		var elem = document.getElementById("elem"+num);
+        alert(elem.childNodes[0]);
+	}
 </script>
 </div>
 </body>
